@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}My Teams - Namibia Hockey Union{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0"><i class="fas fa-users me-2"></i>My Teams</h1>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('register_team') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Register New Team
+        </a>
+    </div>
+</div>
+
+{% if teams %}
+<div class="row">
+    {% for team in teams %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ team.name }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-4 text-muted">Division:</div>
+                    <div class="col-8">{{ team.division }}</div>
+                </div>
+                
+                {% if team.founded_year %}
+                <div class="row mb-3">
+                    <div class="col-4 text-muted">Founded:</div>
+                    <div class="col-8">{{ team.founded_year }}</div>
+                </div>
+                {% endif %}
+                
+                <div class="row mb-3">
+                    <div class="col-4 text-muted">Players:</div>
+                    <div class="col-8">{{ team.players|length }}</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-4 text-muted">Registered:</div>
+                    <div class="col-8">{{ team.created_at.strftime('%d %b %Y') }}</div>
+                </div>
+                
+                {% if team.events %}
+                <h6 class="mt-4 mb-3">Registered Events:</h6>
+                <ul class="list-group">
+                    {% for event in team.events %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ event.name }}
+                        <span class="badge bg-primary rounded-pill">{{ event.start_date.strftime('%d %b') }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <div class="btn-group w-100">
+                    <a href="{{ url_for('register_player') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus me-1"></i> Add Player
+                    </a>
+                    <a href="{{ url_for('register_team_for_event') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-calendar-plus me-1"></i> Register for Event
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle me-2"></i>You haven't registered any teams yet.
+    <div class="mt-3">
+        <a href="{{ url_for('register_team') }}" class="btn btn-primary">Register Your First Team</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
