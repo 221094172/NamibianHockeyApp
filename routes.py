@@ -11,20 +11,23 @@ from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
 import uuid
+from utils import save_optimized_image, delete_image
+
+# Define upload directories
+UPLOAD_FOLDERS = {
+    'logos': os.path.join('static', 'uploads', 'logos'),
+    'players': os.path.join('static', 'uploads', 'players'),
+    'profiles': os.path.join('static', 'uploads', 'profiles')
+}
 
 # Create upload directories if they don't exist
 def create_upload_dirs():
-    # Define necessary upload directories
-    upload_dirs = [
-        os.path.join('static', 'uploads'),
-        os.path.join('static', 'uploads', 'logos'),
-        os.path.join('static', 'uploads', 'players')
-    ]
+    # Create base uploads directory
+    os.makedirs(os.path.join('static', 'uploads'), exist_ok=True)
     
     # Create each directory if it doesn't exist
-    for directory in upload_dirs:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+    for directory in UPLOAD_FOLDERS.values():
+        os.makedirs(directory, exist_ok=True)
 
 # Ensure upload directories exist
 create_upload_dirs()
@@ -137,11 +140,12 @@ def register_team():
     if form.validate_on_submit():
         logo_url = None
         if form.logo.data:
-            # Generate a unique filename using UUID
-            filename = secure_filename(f"{uuid.uuid4()}_{form.logo.data.filename}")
-            logo_path = os.path.join('static', 'uploads', 'logos', filename)
-            form.logo.data.save(logo_path)
-            logo_url = '/' + logo_path  # Save the path for database storage
+            # Save and optimize the logo image
+            logo_url = save_optimized_image(
+                form.logo.data, 
+                UPLOAD_FOLDERS['logos'], 
+                image_type='logo'
+            )
         
         team = Team()
         team.name = form.name.data
@@ -209,19 +213,20 @@ def edit_team(team_id):
         
         # Update logo if new one is provided
         if form.logo.data:
-            # Generate a unique filename using UUID
-            filename = secure_filename(f"{uuid.uuid4()}_{form.logo.data.filename}")
-            logo_path = os.path.join('static', 'uploads', 'logos', filename)
-            form.logo.data.save(logo_path)
+            # Save and optimize the new logo
+            new_logo_url = save_optimized_image(
+                form.logo.data, 
+                UPLOAD_FOLDERS['logos'], 
+                image_type='logo'
+            )
             
-            # Delete old logo file if it exists
-            if team.logo_url and os.path.exists(team.logo_url[1:]):  # Remove leading slash
-                try:
-                    os.remove(team.logo_url[1:])
-                except:
-                    pass  # If error occurs during deletion, just continue
-            
-            team.logo_url = '/' + logo_path
+            if new_logo_url:
+                # Delete old logo file if it exists
+                if team.logo_url:
+                    delete_image(team.logo_url)
+                
+                # Update the team's logo URL
+                team.logo_url = new_logo_url
         
         db.session.commit()
         flash('Team information has been updated successfully!', 'success')
@@ -243,11 +248,12 @@ def register_player():
     if form.validate_on_submit():
         photo_url = None
         if form.photo.data:
-            # Generate a unique filename using UUID
-            filename = secure_filename(f"{uuid.uuid4()}_{form.photo.data.filename}")
-            photo_path = os.path.join('static', 'uploads', 'players', filename)
-            form.photo.data.save(photo_path)
-            photo_url = '/' + photo_path  # Save the path for database storage
+            # Save and optimize the player photo
+            photo_url = save_optimized_image(
+                form.photo.data, 
+                UPLOAD_FOLDERS['players'], 
+                image_type='player'
+            )
         
         player = Player()
         player.first_name = form.first_name.data
@@ -335,19 +341,20 @@ def edit_player(player_id):
         
         # Update photo if new one is provided
         if form.photo.data:
-            # Generate a unique filename using UUID
-            filename = secure_filename(f"{uuid.uuid4()}_{form.photo.data.filename}")
-            photo_path = os.path.join('static', 'uploads', 'players', filename)
-            form.photo.data.save(photo_path)
+            # Save and optimize the player photo
+            new_photo_url = save_optimized_image(
+                form.photo.data, 
+                UPLOAD_FOLDERS['players'], 
+                image_type='player'
+            )
             
-            # Delete old photo file if it exists
-            if player.photo_url and os.path.exists(player.photo_url[1:]):  # Remove leading slash
-                try:
-                    os.remove(player.photo_url[1:])
-                except:
-                    pass  # If error occurs during deletion, just continue
-            
-            player.photo_url = '/' + photo_path
+            if new_photo_url:
+                # Delete old photo file if it exists
+                if player.photo_url:
+                    delete_image(player.photo_url)
+                
+                # Update the player's photo URL
+                player.photo_url = new_photo_url
         
         # Handle team assignment
         selected_team = Team.query.get(form.team_id.data)
