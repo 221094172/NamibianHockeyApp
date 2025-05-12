@@ -200,16 +200,15 @@ def register_player():
             form.photo.data.save(photo_path)
             photo_url = '/' + photo_path  # Save the path for database storage
         
-        player = Player(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            date_of_birth=form.date_of_birth.data,
-            position=form.position.data,
-            jersey_number=form.jersey_number.data,
-            email=form.email.data,
-            phone=form.phone.data,
-            photo_url=photo_url
-        )
+        player = Player()
+        player.first_name = form.first_name.data
+        player.last_name = form.last_name.data
+        player.date_of_birth = form.date_of_birth.data
+        player.position = form.position.data
+        player.jersey_number = form.jersey_number.data
+        player.email = form.email.data
+        player.phone = form.phone.data
+        player.photo_url = photo_url
         
         team = Team.query.get(form.team_id.data)
         if team and team.manager_id == current_user.id:
@@ -249,15 +248,14 @@ def register_event():
     form = EventRegistrationForm()
     
     if form.validate_on_submit():
-        event = Event(
-            name=form.name.data,
-            description=form.description.data,
-            location=form.location.data,
-            start_date=form.start_date.data,
-            end_date=form.end_date.data,
-            registration_deadline=form.registration_deadline.data,
-            created_by=current_user.id
-        )
+        event = Event()
+        event.name = form.name.data
+        event.description = form.description.data
+        event.location = form.location.data
+        event.start_date = form.start_date.data
+        event.end_date = form.end_date.data
+        event.registration_deadline = form.registration_deadline.data
+        event.created_by = current_user.id
         db.session.add(event)
         db.session.commit()
         flash('Event has been created successfully!', 'success')
@@ -329,12 +327,11 @@ def notifications():
         form.target_team_id.choices = [(team.id, team.name) for team in Team.query.filter_by(manager_id=current_user.id).all()]
     
     if form.validate_on_submit():
-        notification = Notification(
-            title=form.title.data,
-            content=form.content.data,
-            created_by=current_user.id,
-            is_global=form.is_global.data
-        )
+        notification = Notification()
+        notification.title = form.title.data
+        notification.content = form.content.data
+        notification.created_by = current_user.id
+        notification.is_global = form.is_global.data
         
         if not form.is_global.data and form.target_team_id.data:
             team = Team.query.get(form.target_team_id.data)
