@@ -412,6 +412,11 @@ def register_event():
     # Get current datetime
     now = datetime.utcnow()
     
+    # Only admin users can create events
+    if not current_user.is_admin:
+        flash('You do not have permission to create events.', 'danger')
+        return redirect(url_for('dashboard'))
+    
     form = EventRegistrationForm()
     
     if form.validate_on_submit():
