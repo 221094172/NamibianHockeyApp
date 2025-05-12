@@ -587,3 +587,36 @@ def notifications():
         ).order_by(Notification.created_at.desc()).all()
     
     return render_template('notifications.html', form=form, notifications=all_notifications, now=now)
+    
+@app.route('/admin/users')
+@login_required
+def admin_users():
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    # Only admin users can access this page
+    if not current_user.is_admin:
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Get all users
+    users = User.query.all()
+    
+    # Calculate admin count
+    admin_count = User.query.filter_by(is_admin=True).count()
+    
+    # Calculate manager count (users who manage at least one team)
+    manager_count = db.session.query(db.func.count(db.distinct(Team.manager_id))).scalar()
+    
+    # Calculate new users this month
+    current_month_start = datetime(now.year, now.month, 1)
+    new_users_count = User.query.filter(User.created_at >= current_month_start).count()
+    
+    return render_template(
+        'admin/user_management.html', 
+        users=users, 
+        admin_count=admin_count,
+        manager_count=manager_count,
+        new_users_count=new_users_count,
+        now=now
+    )
