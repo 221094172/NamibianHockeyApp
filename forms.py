@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, IntegerField, TextAreaField, DateTimeField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, IntegerField, TextAreaField, DateTimeField, SearchField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Optional
 from models import User, Team, Player
 
@@ -88,3 +88,13 @@ class NotificationForm(FlaskForm):
     is_global = BooleanField('Send to all teams')
     target_team_id = SelectField('Target Team', coerce=int, validators=[Optional()])
     submit = SubmitField('Send Notification')
+    
+class SearchForm(FlaskForm):
+    query = StringField('Search', validators=[DataRequired(), Length(min=2, max=100)])
+    category = SelectField('Category', choices=[
+        ('all', 'All'),
+        ('teams', 'Teams'),
+        ('players', 'Players'),
+        ('events', 'Events')
+    ], default='all')
+    submit = SubmitField('Search')
