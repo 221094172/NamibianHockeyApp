@@ -620,3 +620,30 @@ def admin_users():
         new_users_count=new_users_count,
         now=now
     )
+    
+@app.route('/admin/users/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def admin_user_details(user_id):
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    # Only admin users can access this page
+    if not current_user.is_admin:
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Get the user
+    user = User.query.get_or_404(user_id)
+    
+    # Get user's teams
+    teams = Team.query.filter_by(manager_id=user.id).all()
+    
+    # For simplicity, we're not implementing form editing in this example
+    # This would typically include a form to modify user details
+    
+    return render_template(
+        'admin/user_details.html',
+        user=user,
+        teams=teams,
+        now=now
+    )
