@@ -1,11 +1,12 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
+from sqlalchemy import or_
 from flask_login import login_user, current_user, logout_user, login_required
 from app import app, db
 from models import User, Team, Player, Event, Notification
 from forms import (
     RegistrationForm, LoginForm, TeamRegistrationForm, 
     PlayerRegistrationForm, EventRegistrationForm, 
-    TeamEventRegistrationForm, NotificationForm
+    TeamEventRegistrationForm, NotificationForm, SearchForm
 )
 from datetime import datetime
 import os
@@ -412,7 +413,61 @@ def event_details(event_id):
     now = datetime.utcnow()
     
     event = Event.query.get_or_404(event_id)
-    return render_template('event_list.html', event=event, now=now)
+    return render_template('event_details.html', event=event, now=now)
+    
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    form = SearchForm()
+    results = {
+        'teams': [],
+        'players': [],
+        'events': []
+    }
+    
+    if form.validate_on_submit() or request.args.get('query'):
+        # Get search query from form or URL parameter
+        query = form.query.data if form.validate_on_submit() else request.args.get('query')
+        category = form.category.data if form.validate_on_submit() else request.args.get('category', 'all')
+        
+        # Format query for SQL LIKE
+        search_query = f"%{query}%"
+        
+        # Search teams
+        if category in ['all', 'teams']:
+            teams = Team.query.filter(
+                or_(
+                    Team.name.ilike(search_query),
+                    Team.division.ilike(search_query)
+                )
+            ).all()
+            results['teams'] = teams
+        
+        # Search players
+        if category in ['all', 'players']:
+            players = Player.query.filter(
+                or_(
+                    Player.first_name.ilike(search_query),
+                    Player.last_name.ilike(search_query),
+                    Player.position.ilike(search_query)
+                )
+            ).all()
+            results['players'] = players
+        
+        # Search events
+        if category in ['all', 'events']:
+            events = Event.query.filter(
+                or_(
+                    Event.name.ilike(search_query),
+                    Event.description.ilike(search_query),
+                    Event.location.ilike(search_query)
+                )
+            ).all()
+            results['events'] = events
+    
+    return render_template('search.html', form=form, results=results, now=now)
 
 @app.route('/events/register_team', methods=['GET', 'POST'])
 @login_required
