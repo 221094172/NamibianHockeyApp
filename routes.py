@@ -105,6 +105,10 @@ def dashboard():
                           notifications=notifications,
                           now=now)
 
+import os
+from werkzeug.utils import secure_filename
+import uuid
+
 @app.route('/teams/register', methods=['GET', 'POST'])
 @login_required
 def register_team():
@@ -113,11 +117,19 @@ def register_team():
     
     form = TeamRegistrationForm()
     if form.validate_on_submit():
+        logo_url = None
+        if form.logo.data:
+            # Generate a unique filename using UUID
+            filename = secure_filename(f"{uuid.uuid4()}_{form.logo.data.filename}")
+            logo_path = os.path.join('static', 'uploads', 'logos', filename)
+            form.logo.data.save(logo_path)
+            logo_url = '/' + logo_path  # Save the path for database storage
+        
         team = Team(
             name=form.name.data,
             division=form.division.data,
             founded_year=form.founded_year.data,
-            logo_url=form.logo_url.data,
+            logo_url=logo_url,
             manager_id=current_user.id
         )
         db.session.add(team)
