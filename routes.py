@@ -2,11 +2,13 @@ from flask import render_template, redirect, url_for, flash, request, jsonify
 from sqlalchemy import or_
 from flask_login import login_user, current_user, logout_user, login_required
 from app import app, db
+import config
 from models import User, Team, Player, Event, Notification
 from forms import (
     RegistrationForm, LoginForm, TeamRegistrationForm, 
     PlayerRegistrationForm, EventRegistrationForm, 
-    TeamEventRegistrationForm, NotificationForm, SearchForm
+    TeamEventRegistrationForm, NotificationForm, SearchForm,
+    AdminRegistrationForm
 )
 from datetime import datetime
 import os
@@ -66,6 +68,35 @@ def register():
         return redirect(url_for('login'))
     
     return render_template('register.html', form=form, now=now)
+
+@app.route('/admin/register', methods=['GET', 'POST'])
+def admin_register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    form = AdminRegistrationForm()
+    if form.validate_on_submit():
+        # Verify admin credentials
+        if form.email.data != config.ADMIN_EMAIL or form.admin_code.data != config.ADMIN_SECRET_CODE:
+            flash('Invalid admin credentials. Please check your email and admin code.', 'danger')
+            return render_template('admin_register.html', form=form, now=now)
+        
+        # Create admin user
+        user = User()
+        user.username = form.username.data
+        user.email = form.email.data
+        user.set_password(form.password.data)
+        user.is_admin = True
+        db.session.add(user)
+        db.session.commit()
+        
+        flash('Admin account has been created! You can now log in with admin privileges.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('admin_register.html', form=form, now=now)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
