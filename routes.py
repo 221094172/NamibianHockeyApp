@@ -512,9 +512,10 @@ def notifications():
     
     # Populate target_team_id dropdown for admin users
     if current_user.is_admin:
-        form.target_team_id.choices = [(0, 'All Teams')] + [(team.id, team.name) for team in Team.query.all()]
+        # Use type conversion to ensure all ids are same type (integers)
+        form.target_team_id.choices = [(int(0), 'All Teams')] + [(int(team.id), team.name) for team in Team.query.all()]
     else:
-        form.target_team_id.choices = [(team.id, team.name) for team in Team.query.filter_by(manager_id=current_user.id).all()]
+        form.target_team_id.choices = [(int(team.id), team.name) for team in Team.query.filter_by(manager_id=current_user.id).all()]
     
     if form.validate_on_submit():
         notification = Notification()
