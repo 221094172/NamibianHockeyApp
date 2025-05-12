@@ -247,6 +247,9 @@ def event_details(event_id):
 @app.route('/events/register_team', methods=['GET', 'POST'])
 @login_required
 def register_team_for_event():
+    # Get current datetime
+    now = datetime.utcnow()
+    
     form = TeamEventRegistrationForm()
     
     # Populate team_id dropdown with teams managed by current user
@@ -254,7 +257,7 @@ def register_team_for_event():
     
     # Populate event_id dropdown with upcoming events
     form.event_id.choices = [(event.id, event.name) for event in 
-                            Event.query.filter(Event.registration_deadline > datetime.utcnow()).all()]
+                            Event.query.filter(Event.registration_deadline > now).all()]
     
     if form.validate_on_submit():
         team = Team.query.get(form.team_id.data)
@@ -272,11 +275,14 @@ def register_team_for_event():
         
         return redirect(url_for('event_list'))
     
-    return render_template('team_event_registration.html', form=form)
+    return render_template('team_event_registration.html', form=form, now=now)
 
 @app.route('/notifications', methods=['GET', 'POST'])
 @login_required
 def notifications():
+    # Get current datetime
+    now = datetime.utcnow()
+    
     form = NotificationForm()
     
     # Populate target_team_id dropdown for admin users
@@ -299,7 +305,7 @@ def notifications():
                 notification.target_team_id = team.id
             else:
                 flash('Invalid team selected.', 'danger')
-                return render_template('notifications.html', form=form)
+                return render_template('notifications.html', form=form, now=now)
         
         db.session.add(notification)
         db.session.commit()
@@ -319,4 +325,4 @@ def notifications():
             (Notification.created_by == current_user.id)
         ).order_by(Notification.created_at.desc()).all()
     
-    return render_template('notifications.html', form=form, notifications=all_notifications)
+    return render_template('notifications.html', form=form, notifications=all_notifications, now=now)
