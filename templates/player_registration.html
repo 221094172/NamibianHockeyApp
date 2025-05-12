@@ -115,18 +115,18 @@
                     </div>
                     
                     <div class="mb-3">
-                        {{ form.photo_url.label(class="form-label") }}
-                        {% if form.photo_url.errors %}
-                            {{ form.photo_url(class="form-control is-invalid") }}
+                        {{ form.photo.label(class="form-label") }}
+                        {% if form.photo.errors %}
+                            {{ form.photo(class="form-control is-invalid") }}
                             <div class="invalid-feedback">
-                                {% for error in form.photo_url.errors %}
+                                {% for error in form.photo.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.photo_url(class="form-control") }}
+                            {{ form.photo(class="form-control") }}
                         {% endif %}
-                        <small class="form-text text-muted">Enter a URL to the player's photo (optional).</small>
+                        <small class="form-text text-muted">Upload the player's photo (optional, JPG/PNG/GIF).</small>
                     </div>
                     
                     <div class="mb-4">
