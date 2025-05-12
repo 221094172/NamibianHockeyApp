@@ -45,7 +45,7 @@ class Team(db.Model):
     logo_url = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     players = db.relationship('Player', secondary=player_team, lazy='subquery',
-                            backref=db.backref('teams', lazy=True))
+                            back_populates='teams')
     events = db.relationship('Event', secondary=team_event, lazy='subquery',
                            backref=db.backref('teams', lazy=True))
     
@@ -63,6 +63,9 @@ class Player(db.Model):
     phone = db.Column(db.String(20))
     photo_url = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Add explicit relationship to Team model via player_team association table
+    teams = db.relationship('Team', secondary=player_team, lazy='subquery',
+                         back_populates='players')
     
     def __repr__(self):
         return f'<Player {self.first_name} {self.last_name}>'
