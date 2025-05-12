@@ -17,7 +17,7 @@ db = SQLAlchemy(model_class=Base)
 
 # Create Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET", "namibia_hockey_secret_key")
+app.config.from_pyfile('config.py')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure database - using SQLite for simplicity
