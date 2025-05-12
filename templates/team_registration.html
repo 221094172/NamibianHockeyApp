@@ -10,7 +10,7 @@
                 <h3 class="mb-0"><i class="fas fa-users me-2"></i>Team Registration</h3>
             </div>
             <div class="card-body">
-                <form method="POST" action="">
+                <form method="POST" action="" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
                     
                     <div class="mb-3">
@@ -59,18 +59,18 @@
                     </div>
                     
                     <div class="mb-3">
-                        {{ form.logo_url.label(class="form-label") }}
-                        {% if form.logo_url.errors %}
-                            {{ form.logo_url(class="form-control is-invalid") }}
+                        {{ form.logo.label(class="form-label") }}
+                        {% if form.logo.errors %}
+                            {{ form.logo(class="form-control is-invalid") }}
                             <div class="invalid-feedback">
-                                {% for error in form.logo_url.errors %}
+                                {% for error in form.logo.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.logo_url(class="form-control") }}
+                            {{ form.logo(class="form-control") }}
                         {% endif %}
-                        <small class="form-text text-muted">URL to your team's logo image (optional).</small>
+                        <small class="form-text text-muted">Upload your team's logo image (optional, JPG/PNG/GIF).</small>
                     </div>
                     
                     <div class="d-grid gap-2">

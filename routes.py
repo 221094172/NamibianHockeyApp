@@ -8,6 +8,9 @@ from forms import (
     TeamEventRegistrationForm, NotificationForm
 )
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
+import uuid
 
 @app.route('/')
 def index():
@@ -105,10 +108,6 @@ def dashboard():
                           notifications=notifications,
                           now=now)
 
-import os
-from werkzeug.utils import secure_filename
-import uuid
-
 @app.route('/teams/register', methods=['GET', 'POST'])
 @login_required
 def register_team():
@@ -175,6 +174,14 @@ def register_player():
     form.team_id.choices = [(team.id, team.name) for team in Team.query.filter_by(manager_id=current_user.id).all()]
     
     if form.validate_on_submit():
+        photo_url = None
+        if form.photo.data:
+            # Generate a unique filename using UUID
+            filename = secure_filename(f"{uuid.uuid4()}_{form.photo.data.filename}")
+            photo_path = os.path.join('static', 'uploads', 'players', filename)
+            form.photo.data.save(photo_path)
+            photo_url = '/' + photo_path  # Save the path for database storage
+        
         player = Player(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
@@ -183,7 +190,7 @@ def register_player():
             jersey_number=form.jersey_number.data,
             email=form.email.data,
             phone=form.phone.data,
-            photo_url=form.photo_url.data
+            photo_url=photo_url
         )
         
         team = Team.query.get(form.team_id.data)
