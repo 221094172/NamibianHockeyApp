@@ -23,17 +23,30 @@
                 <h5 class="mb-0">{{ team.name }}</h5>
             </div>
             <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-4 text-muted">Division:</div>
-                    <div class="col-8">{{ team.division }}</div>
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center mb-3 mb-md-0">
+                        {% if team.logo_url %}
+                        <img src="{{ team.logo_url }}" alt="{{ team.name }} Logo" class="img-fluid rounded" style="max-height: 120px;">
+                        {% else %}
+                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 120px; width: 100%;">
+                            <i class="fas fa-shield-alt fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-4 text-muted">Division:</div>
+                            <div class="col-8">{{ team.division }}</div>
+                        </div>
+                        
+                        {% if team.founded_year %}
+                        <div class="row mb-3">
+                            <div class="col-4 text-muted">Founded:</div>
+                            <div class="col-8">{{ team.founded_year }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                
-                {% if team.founded_year %}
-                <div class="row mb-3">
-                    <div class="col-4 text-muted">Founded:</div>
-                    <div class="col-8">{{ team.founded_year }}</div>
-                </div>
-                {% endif %}
                 
                 <div class="row mb-3">
                     <div class="col-4 text-muted">Players:</div>
