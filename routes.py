@@ -12,6 +12,23 @@ import os
 from werkzeug.utils import secure_filename
 import uuid
 
+# Create upload directories if they don't exist
+def create_upload_dirs():
+    # Define necessary upload directories
+    upload_dirs = [
+        os.path.join('static', 'uploads'),
+        os.path.join('static', 'uploads', 'logos'),
+        os.path.join('static', 'uploads', 'players')
+    ]
+    
+    # Create each directory if it doesn't exist
+    for directory in upload_dirs:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+# Ensure upload directories exist
+create_upload_dirs()
+
 @app.route('/')
 def index():
     # Get current datetime
@@ -35,7 +52,9 @@ def register():
     
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User()
+        user.username = form.username.data
+        user.email = form.email.data
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -124,13 +143,12 @@ def register_team():
             form.logo.data.save(logo_path)
             logo_url = '/' + logo_path  # Save the path for database storage
         
-        team = Team(
-            name=form.name.data,
-            division=form.division.data,
-            founded_year=form.founded_year.data,
-            logo_url=logo_url,
-            manager_id=current_user.id
-        )
+        team = Team()
+        team.name = form.name.data
+        team.division = form.division.data
+        team.founded_year = form.founded_year.data
+        team.logo_url = logo_url
+        team.manager_id = current_user.id
         db.session.add(team)
         db.session.commit()
         flash('Team has been registered successfully!', 'success')
