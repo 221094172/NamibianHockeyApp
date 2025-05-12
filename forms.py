@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, IntegerField, TextAreaField, DateTimeField, FileField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, IntegerField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Optional
 from models import User, Team, Player
 
@@ -35,7 +36,10 @@ class TeamRegistrationForm(FlaskForm):
         ('junior_girls', 'Junior Girls')
     ], validators=[DataRequired()])
     founded_year = IntegerField('Founded Year', validators=[Optional()])
-    logo_url = StringField('Logo URL', validators=[Optional(), Length(max=256)])
+    logo = FileField('Team Logo', validators=[
+        Optional(),
+        FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')
+    ])
     submit = SubmitField('Register Team')
     
     def validate_name(self, name):
@@ -57,7 +61,10 @@ class PlayerRegistrationForm(FlaskForm):
     jersey_number = IntegerField('Jersey Number', validators=[Optional()])
     email = StringField('Email', validators=[Optional(), Email()])
     phone = StringField('Phone', validators=[Optional(), Length(max=20)])
-    photo_url = StringField('Photo URL', validators=[Optional(), Length(max=256)])
+    photo = FileField('Player Photo', validators=[
+        Optional(),
+        FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')
+    ])
     team_id = SelectField('Team', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Register Player')
 

@@ -66,7 +66,7 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% set age = ((now - player.date_of_birth).days / 365.25)|int %}
+                            {% set age = ((now.date() - player.date_of_birth).days / 365.25)|int %}
                             {{ age }} years
                         </td>
                         <td>
@@ -136,7 +136,7 @@
                                 <td>{{ player.position }}</td>
                                 <td>{{ player.jersey_number if player.jersey_number else '-' }}</td>
                                 <td>
-                                    {% set age = ((now - player.date_of_birth).days / 365.25)|int %}
+                                    {% set age = ((now.date() - player.date_of_birth).days / 365.25)|int %}
                                     {{ age }} years
                                 </td>
                             </tr>
