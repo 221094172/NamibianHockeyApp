@@ -98,3 +98,21 @@ class SearchForm(FlaskForm):
         ('events', 'Events')
     ], default='all')
     submit = SubmitField('Search')
+    
+class AdminRegistrationForm(FlaskForm):
+    username = StringField('Admin Username', validators=[DataRequired(), Length(min=4, max=64)])
+    email = StringField('Admin Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Admin Password', validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    admin_code = PasswordField('Admin Code', validators=[DataRequired()])
+    submit = SubmitField('Register as Admin')
+    
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('Username already taken. Please choose a different one.')
+    
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('Email already in use. Please use a different one.')
