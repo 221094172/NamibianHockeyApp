@@ -178,7 +178,56 @@ def team_details(team_id):
         flash('You do not have permission to view this team.', 'danger')
         return redirect(url_for('team_list'))
     
-    return render_template('team_list.html', team=team, now=now)
+    return render_template('team_details.html', team=team, now=now)
+
+@app.route('/teams/<int:team_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_team(team_id):
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    team = Team.query.get_or_404(team_id)
+    
+    # Check if current user is the team manager or admin
+    if team.manager_id != current_user.id and not current_user.is_admin:
+        flash('You do not have permission to edit this team.', 'danger')
+        return redirect(url_for('team_list'))
+    
+    form = TeamRegistrationForm()
+    
+    if request.method == 'GET':
+        # Populate form with existing data
+        form.name.data = team.name
+        form.division.data = team.division
+        form.founded_year.data = team.founded_year
+    
+    if form.validate_on_submit():
+        # Update team information
+        team.name = form.name.data
+        team.division = form.division.data
+        team.founded_year = form.founded_year.data
+        
+        # Update logo if new one is provided
+        if form.logo.data:
+            # Generate a unique filename using UUID
+            filename = secure_filename(f"{uuid.uuid4()}_{form.logo.data.filename}")
+            logo_path = os.path.join('static', 'uploads', 'logos', filename)
+            form.logo.data.save(logo_path)
+            
+            # Delete old logo file if it exists
+            if team.logo_url and os.path.exists(team.logo_url[1:]):  # Remove leading slash
+                try:
+                    os.remove(team.logo_url[1:])
+                except:
+                    pass  # If error occurs during deletion, just continue
+            
+            team.logo_url = '/' + logo_path
+        
+        db.session.commit()
+        flash('Team information has been updated successfully!', 'success')
+        return redirect(url_for('team_details', team_id=team.id))
+    
+    return render_template('edit_team.html', form=form, team=team, now=now)
 
 @app.route('/players/register', methods=['GET', 'POST'])
 @login_required
@@ -238,6 +287,85 @@ def player_list():
                 players.append(player)
     
     return render_template('player_list.html', players=players, teams=managed_teams, now=now)
+    
+@app.route('/players/<int:player_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_player(player_id):
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    player = Player.query.get_or_404(player_id)
+    
+    # Verify player belongs to a team managed by current user
+    user_teams = Team.query.filter_by(manager_id=current_user.id).all()
+    player_team_ids = [team.id for team in player.teams]
+    is_manager = any(team.id in player_team_ids for team in user_teams)
+    
+    if not is_manager and not current_user.is_admin:
+        flash('You do not have permission to edit this player.', 'danger')
+        return redirect(url_for('player_list'))
+    
+    form = PlayerRegistrationForm()
+    
+    # Populate team_id dropdown with teams managed by current user
+    form.team_id.choices = [(team.id, team.name) for team in Team.query.filter_by(manager_id=current_user.id).all()]
+    
+    if request.method == 'GET':
+        # Pre-populate form with existing data
+        form.first_name.data = player.first_name
+        form.last_name.data = player.last_name
+        form.date_of_birth.data = player.date_of_birth
+        form.position.data = player.position
+        form.jersey_number.data = player.jersey_number
+        form.email.data = player.email
+        form.phone.data = player.phone
+        # Can't pre-populate file field, just show existing photo
+        if player.teams:
+            form.team_id.data = player.teams[0].id  # Pre-select the first team
+    
+    if form.validate_on_submit():
+        # Update player details
+        player.first_name = form.first_name.data
+        player.last_name = form.last_name.data
+        player.date_of_birth = form.date_of_birth.data
+        player.position = form.position.data
+        player.jersey_number = form.jersey_number.data
+        player.email = form.email.data
+        player.phone = form.phone.data
+        
+        # Update photo if new one is provided
+        if form.photo.data:
+            # Generate a unique filename using UUID
+            filename = secure_filename(f"{uuid.uuid4()}_{form.photo.data.filename}")
+            photo_path = os.path.join('static', 'uploads', 'players', filename)
+            form.photo.data.save(photo_path)
+            
+            # Delete old photo file if it exists
+            if player.photo_url and os.path.exists(player.photo_url[1:]):  # Remove leading slash
+                try:
+                    os.remove(player.photo_url[1:])
+                except:
+                    pass  # If error occurs during deletion, just continue
+            
+            player.photo_url = '/' + photo_path
+        
+        # Handle team assignment
+        selected_team = Team.query.get(form.team_id.data)
+        if selected_team and selected_team.manager_id == current_user.id:
+            # Check if player is already on this team
+            if selected_team not in player.teams:
+                player.teams.append(selected_team)
+        
+        db.session.commit()
+        flash('Player information has been updated successfully!', 'success')
+        
+        # Redirect to a sensible location - team details if coming from there
+        next_page = request.args.get('next')
+        if next_page and next_page.startswith('/teams/'):
+            return redirect(next_page)
+        return redirect(url_for('player_list'))
+    
+    return render_template('edit_player.html', form=form, player=player, now=now)
 
 @app.route('/events/register', methods=['GET', 'POST'])
 @login_required
