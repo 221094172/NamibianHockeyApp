@@ -20,34 +20,17 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Configure database with MySQL support for PythonAnywhere
+# Configure database
 database_url = os.environ.get("DATABASE_URL", "sqlite:///hockey.db")
-
-# If we're using MySQL (PythonAnywhere), ensure proper configuration
-if database_url.startswith("mysql://"):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 280,  # Slightly less than PythonAnywhere's 300s timeout
-        "pool_pre_ping": True,
-    }
-# If we're using PostgreSQL, maintain compatibility
-elif database_url.startswith("postgres://"):
+# If DATABASE_URL starts with postgres:// (common mistake), fix it to postgresql://
+if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
-        "connect_args": {
-            "connect_timeout": 10,
-        }
-    }
-# Otherwise use the provided URL (sqlite fallback)
-else:
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
-    }
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize database
