@@ -1,0 +1,194 @@
+/* Offline Mode Styling for Namibia Hockey Union App */
+
+/* Connection status indicator */
+.connection-status {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    text-align: center;
+    z-index: 9999;
+    font-weight: bold;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.connection-status.offline {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-bottom: 1px solid #f5c6cb;
+}
+
+.connection-status.online {
+    background-color: #d4edda;
+    color: #155724;
+    border-bottom: 1px solid #c3e6cb;
+}
+
+/* Sync message */
+.sync-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #cce5ff;
+    color: #004085;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 9990;
+    display: none;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+/* Offline items styling */
+.offline-item {
+    position: relative;
+    border: 1px dashed #ffc107;
+}
+
+.offline-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 193, 7, 0.1),
+        rgba(255, 193, 7, 0.1) 10px,
+        rgba(255, 193, 7, 0.05) 10px,
+        rgba(255, 193, 7, 0.05) 20px
+    );
+    pointer-events: none;
+}
+
+/* Offline badge */
+.badge.bg-warning {
+    position: relative;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+/* Offline page styling */
+.offline-banner {
+    margin: 2rem 0;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.fas.fa-wifi-slash {
+    display: inline-block;
+    position: relative;
+}
+
+.fas.fa-wifi-slash::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: currentColor;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(-45deg);
+}
+
+/* Improve button visibility in dark mode */
+.btn-primary {
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+}
+
+/* Offline mode indicator in navbar */
+.navbar .offline-indicator {
+    display: none;
+    margin-left: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.navbar .offline-indicator.visible {
+    display: inline-block;
+    animation: blink 2s infinite;
+}
+
+/* No connection overlay for forms */
+.no-connection-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    display: none;
+}
+
+.no-connection-overlay.visible {
+    display: flex;
+}
+
+.no-connection-overlay p {
+    margin: 20px 0;
+    max-width: 80%;
+    text-align: center;
+}
+
+.no-connection-overlay .options {
+    display: flex;
+    gap: 20px;
+}
+
+/* Placeholder images for offline mode */
+.card-img-top.offline-placeholder {
+    background: #868e96;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e9ecef;
+    font-size: 3rem;
+}
+
+/* Add hockey-themed pattern to offline pages */
+body.offline-mode {
+    position: relative;
+}
+
+body.offline-mode::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, #212529 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: -1;
+}
