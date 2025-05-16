@@ -1,0 +1,214 @@
+/* Hockey-themed Loading Animation Styles */
+
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.loader-container.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hockey-loader {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+/* Hockey puck animation */
+.hockey-puck {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #000;
+    border-radius: 50%;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    animation: puck-slide 2s infinite ease-in-out;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes puck-slide {
+    0% {
+        left: 0;
+        transform: translateY(-50%) rotate(0deg);
+    }
+    25% {
+        left: 75%;
+        transform: translateY(-50%) rotate(180deg);
+    }
+    50% {
+        left: 100%;
+        transform: translateY(-50%) rotate(360deg);
+    }
+    75% {
+        left: 75%;
+        transform: translateY(-50%) rotate(540deg);
+    }
+    100% {
+        left: 0;
+        transform: translateY(-50%) rotate(720deg);
+    }
+}
+
+/* Hockey stick animation */
+.hockey-stick {
+    position: absolute;
+    width: 100px;
+    height: 10px;
+    background-color: #8B4513;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: 20% 50%;
+    border-radius: 5px;
+    animation: stick-swing 2s infinite ease-in-out;
+}
+
+.hockey-stick:before {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 15px;
+    background-color: #8B4513;
+    bottom: -2px;
+    left: -5px;
+    border-radius: 5px;
+    transform: rotate(-10deg);
+}
+
+@keyframes stick-swing {
+    0% {
+        transform: translateX(-50%) rotate(-30deg);
+    }
+    25% {
+        transform: translateX(-50%) rotate(30deg);
+    }
+    50% {
+        transform: translateX(-50%) rotate(-15deg);
+    }
+    75% {
+        transform: translateX(-50%) rotate(15deg);
+    }
+    100% {
+        transform: translateX(-50%) rotate(-30deg);
+    }
+}
+
+/* Ice rink */
+.ice-rink {
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    background-color: #B0E0E6;
+    bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(173, 216, 230, 0.8);
+}
+
+/* Goal net */
+.goal-net {
+    position: absolute;
+    width: 30px;
+    height: 40px;
+    bottom: 20px;
+    right: 0;
+    border: 3px solid #555;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+    border-radius: 0 0 0 10px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 3px,
+        rgba(255, 255, 255, 0.5) 3px,
+        rgba(255, 255, 255, 0.5) 5px
+    );
+}
+
+/* Loading text */
+.loading-text {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: text-pulse 1.5s infinite;
+}
+
+@keyframes text-pulse {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+
+/* Page transition animations */
+.page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    z-index: 9998;
+    transform: translateX(-100%);
+    transition: transform 0.5s ease-in-out;
+}
+
+.page-transition.show {
+    transform: translateX(0);
+}
+
+.page-transition.hide {
+    transform: translateX(100%);
+}
+
+/* Hockey lines transition effect */
+.hockey-line {
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    background-color: #1e88e5;
+    animation: line-slide 1.5s forwards;
+}
+
+.hockey-line:nth-child(1) { left: 10%; animation-delay: 0.1s; }
+.hockey-line:nth-child(2) { left: 30%; animation-delay: 0.2s; }
+.hockey-line:nth-child(3) { left: 50%; animation-delay: 0.3s; }
+.hockey-line:nth-child(4) { left: 70%; animation-delay: 0.4s; }
+.hockey-line:nth-child(5) { left: 90%; animation-delay: 0.5s; }
+
+@keyframes line-slide {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
