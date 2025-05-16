@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Firebase Authentication{% endblock %}
+
+{% block head %}
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Namibia Hockey Union App</h3>
+                </div>
+                <div class="card-body">
+                    <div id="firebaseui-auth-container"></div>
+                    <div id="loader">Loading...</div>
+                    <div id="user-signed-in" style="display:none;">
+                        <p>You are signed in!</p>
+                        <button id="sign-out" class="btn btn-danger">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "{{ firebase_api_key }}",
+        authDomain: "{{ firebase_project_id }}.firebaseapp.com",
+        projectId: "{{ firebase_project_id }}",
+        storageBucket: "{{ firebase_storage_bucket }}",
+        appId: "{{ firebase_app_id }}"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Check if user is signed in
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // User is signed in
+            document.getElementById('firebaseui-auth-container').style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('user-signed-in').style.display = 'block';
+            
+            // Get ID token
+            user.getIdToken().then(function(idToken) {
+                // Send token to your backend via HTTPS
+                fetch('/auth/session-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ idToken: idToken }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect to dashboard
+                        window.location.href = '/dashboard';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            });
+        } else {
+            // User is signed out
+            document.getElementById('firebaseui-auth-container').style.display = 'block';
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('user-signed-in').style.display = 'none';
+            
+            // Initialize FirebaseUI
+            const ui = new firebaseui.auth.AuthUI(firebase.auth());
+            
+            ui.start('#firebaseui-auth-container', {
+                signInOptions: [
+                    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+                ],
+                signInSuccessUrl: '/dashboard',
+                tosUrl: '/terms-of-service',
+                privacyPolicyUrl: '/privacy-policy'
+            });
+        }
+    });
+
+    // Sign out button
+    document.getElementById('sign-out').addEventListener('click', function() {
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful
+            window.location.href = '/';
+        }).catch(function(error) {
+            // An error happened
+            console.error('Sign out error:', error);
+        });
+    });
+</script>
+{% endblock %}

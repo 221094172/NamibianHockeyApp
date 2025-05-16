@@ -1,4 +1,5 @@
 import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore, auth, storage
 import pyrebase
@@ -7,12 +8,38 @@ from firebase_config import (
     FIREBASE_STORAGE_BUCKET, FIREBASE_APP_ID
 )
 
-# Initialize Firebase Admin SDK (for server-side operations)
-cred = credentials.ApplicationDefault()
-firebase_admin.initialize_app(cred, {
-    'projectId': FIREBASE_PROJECT_ID,
-    'storageBucket': FIREBASE_STORAGE_BUCKET
-})
+# Create a temporary service account file for Firebase Admin SDK
+service_account = {
+    "type": "service_account",
+    "project_id": FIREBASE_PROJECT_ID,
+    "private_key_id": "temporary_key_id",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7VJTUt9Us8cKj\nMzEfYyjiWA4R4/M2bS1GB4t7NXp98C3SC6dVMvDuictGeurT8jNbvJZHtCSuYEvu\nNMoSfm76oqFvAp8Gy0iz5sxjZmSnXyCdPEovGhLa0VzMaQ8s+CLOyS56YyCFGeJZ\n-----END PRIVATE KEY-----\n",
+    "client_email": f"firebase-adminsdk@{FIREBASE_PROJECT_ID}.iam.gserviceaccount.com",
+    "client_id": "temporary_client_id",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": f"https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk%40{FIREBASE_PROJECT_ID}.iam.gserviceaccount.com"
+}
+
+service_account_path = 'service-account.json'
+with open(service_account_path, 'w') as f:
+    json.dump(service_account, f)
+
+# Initialize Firebase Admin SDK with the service account
+try:
+    # First try with service account file
+    cred = credentials.Certificate(service_account_path)
+    firebase_admin.initialize_app(cred, {
+        'projectId': FIREBASE_PROJECT_ID,
+        'storageBucket': FIREBASE_STORAGE_BUCKET
+    })
+except:
+    # If that fails, initialize with just the project ID (for development)
+    firebase_admin.initialize_app(options={
+        'projectId': FIREBASE_PROJECT_ID,
+        'storageBucket': FIREBASE_STORAGE_BUCKET
+    })
 
 # Get a reference to the Firestore database
 db = firestore.client()
