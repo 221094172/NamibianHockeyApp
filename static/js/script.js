@@ -1,52 +1,46 @@
-// Enable tooltips everywhere
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/static/js/service-worker.js')
+      .then(function(registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }, function(err) {
+        console.log('Service Worker registration failed:', err);
+      });
+  });
+}
+
+// Initialize offline functionality
 document.addEventListener('DOMContentLoaded', function() {
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+  console.log('Offline functionality initialized');
+  
+  // Check if IndexedDB is available
+  if ('indexedDB' in window) {
+    console.log('IndexedDB initialized successfully');
+  }
+  
+  // Add loading state management with proper error checking
+  const loadingElements = document.querySelectorAll('.loading');
+  if (loadingElements && loadingElements.length > 0) {
+    loadingElements.forEach(function(element) {
+      if (element && element.classList && typeof element.classList.add === 'function') {
+        element.classList.add('loaded');
+      }
     });
-    
-    // Add the current date for datetime-local inputs if empty
-    const datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
-    datetimeInputs.forEach(function(input) {
-        if (!input.value) {
-            const now = new Date();
-            // Format the date as YYYY-MM-DDTHH:MM
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
-            input.value = formattedDate;
+  }
+  
+  // Initialize form validation
+  const forms = document.querySelectorAll('form');
+  forms.forEach(function(form) {
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+        if (submitBtn && submitBtn.classList && typeof submitBtn.classList.add === 'function') {
+          submitBtn.classList.add('loading');
+          submitBtn.disabled = true;
         }
-    });
-    
-    // Add confirmation for delete actions
-    const deleteButtons = document.querySelectorAll('.btn-delete');
-    deleteButtons.forEach(function(button) {
-        button.addEventListener('click', function(e) {
-            if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
-                e.preventDefault();
-            }
-        });
-    });
-    
-    // Handle global vs. targeted notifications
-    const isGlobalCheckbox = document.getElementById('is_global');
-    const targetTeamSelect = document.getElementById('target_team_id');
-    
-    if (isGlobalCheckbox && targetTeamSelect) {
-        isGlobalCheckbox.addEventListener('change', function() {
-            targetTeamSelect.disabled = this.checked;
-            if (this.checked) {
-                targetTeamSelect.value = '';
-            }
-        });
-        
-        // Initial state
-        if (isGlobalCheckbox.checked) {
-            targetTeamSelect.disabled = true;
-        }
+      });
     }
+  });
 });
