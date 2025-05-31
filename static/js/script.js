@@ -24,8 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const loadingElements = document.querySelectorAll('.loading');
   if (loadingElements && loadingElements.length > 0) {
     loadingElements.forEach(function(element) {
-      if (element && element.classList && typeof element.classList.add === 'function') {
-        element.classList.add('loaded');
+      if (element && element.classList) {
+        try {
+          element.classList.add('loaded');
+        } catch (e) {
+          console.warn('Could not add loaded class to element:', e);
+        }
       }
     });
   }
@@ -36,9 +40,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
       form.addEventListener('submit', function(e) {
         const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
-        if (submitBtn && submitBtn.classList && typeof submitBtn.classList.add === 'function') {
-          submitBtn.classList.add('loading');
-          submitBtn.disabled = true;
+        if (submitBtn && submitBtn.classList) {
+          try {
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+          } catch (e) {
+            console.warn('Could not modify submit button:', e);
+          }
         }
       });
     }
