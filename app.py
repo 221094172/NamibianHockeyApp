@@ -21,7 +21,8 @@ app.config.from_pyfile('config.py')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure database - use SQLite for local development
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hockey.db"
+database_url = "sqlite:///instance/hockey.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -39,7 +40,18 @@ login_manager.login_view = 'login'
 with app.app_context():
     # Import models to ensure tables are created
     import models  # noqa: F401
-    db.create_all()
+    
+    # Create instance directory if it doesn't exist
+    import os
+    instance_path = os.path.join(os.path.dirname(__file__), 'instance')
+    os.makedirs(instance_path, exist_ok=True)
+    
+    # Create all tables
+    try:
+        db.create_all()
+        print("Database tables created successfully")
+    except Exception as e:
+        print(f"Database creation error: {e}")
     
     # Import routes
     import routes  # noqa: F401
