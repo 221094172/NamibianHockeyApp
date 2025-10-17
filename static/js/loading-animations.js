@@ -51,7 +51,7 @@ let loader = {
             document.body.insertAdjacentHTML('beforeend', transitionHTML);
             
             // Store references
-            this.pageTransition = document.querySelector('.page-transition');
+            this.pageTransitionElement = document.querySelector('.page-transition');
             this.loadingText = document.querySelector('.loading-text');
         }
     },
@@ -90,8 +90,10 @@ let loader = {
     
     // Perform a page transition
     pageTransition: function(callback) {
+        this.init();
+        
         // Show transition
-        this.pageTransition.classList.add('show');
+        this.pageTransitionElement.classList.add('show');
         
         // After animation completes
         setTimeout(() => {
@@ -100,12 +102,12 @@ let loader = {
             }
             
             // Hide transition with exit animation
-            this.pageTransition.classList.remove('show');
-            this.pageTransition.classList.add('hide');
+            this.pageTransitionElement.classList.remove('show');
+            this.pageTransitionElement.classList.add('hide');
             
             // Reset after exit animation
             setTimeout(() => {
-                this.pageTransition.classList.remove('hide');
+                this.pageTransitionElement.classList.remove('hide');
             }, 500);
         }, 1000);
     }
