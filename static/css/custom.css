@@ -1,89 +1,308 @@
 /* Custom styles for Namibia Hockey Union application */
+/* Hockey-themed gradient design */
 
-/* Avatar placeholder */
-.avatar-placeholder {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
+:root {
+    --hockey-ice-blue: #E3F2FD;
+    --hockey-blue: #1E88E5;
+    --hockey-dark-blue: #0D47A1;
+    --hockey-teal: #00ACC1;
+    --hockey-green: #2E7D32;
+    --hockey-red: #C62828;
+    --hockey-light: #F5F5F5;
+    --hockey-gradient-1: linear-gradient(135deg, #1E88E5 0%, #00ACC1 100%);
+    --hockey-gradient-2: linear-gradient(135deg, #0D47A1 0%, #1E88E5 100%);
+    --hockey-gradient-3: linear-gradient(135deg, #E3F2FD 0%, #B3E5FC 100%);
+    --hockey-gradient-light: linear-gradient(135deg, #F5F5F5 0%, #E3F2FD 100%);
 }
 
-/* Card hover effect */
+/* Body and main background */
+body {
+    background: var(--hockey-gradient-light);
+    color: #212529;
+    min-height: 100vh;
+}
+
+/* Navbar with hockey gradient */
+.navbar {
+    background: var(--hockey-gradient-1) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: white !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+    color: white !important;
+    transform: translateY(-1px);
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    font-weight: bold;
+    color: #fff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    background: white;
+    border: 1px solid rgba(30, 136, 229, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    color: #212529;
+}
+
+.dropdown-item:hover {
+    background: var(--hockey-gradient-3);
+    color: var(--hockey-dark-blue);
+}
+
+/* Main container */
+main.container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Cards with gradient accents */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.card-header {
+    background: var(--hockey-gradient-3);
+    border-bottom: 2px solid var(--hockey-blue);
+    border-radius: 12px 12px 0 0 !important;
+    color: var(--hockey-dark-blue);
+    font-weight: 600;
+}
+
 .card-hover:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(30, 136, 229, 0.2);
 }
 
 /* Custom background for hockey-related elements */
 .bg-hockey {
-    background-color: #1a5d1a;
+    background: var(--hockey-gradient-1);
     color: white;
+}
+
+.bg-primary {
+    background: var(--hockey-gradient-1) !important;
 }
 
 /* Border for team cards */
 .team-card {
-    border-left: 4px solid var(--bs-primary);
+    border-left: 4px solid var(--hockey-blue);
 }
 
-/* Responsive font sizes */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 1.8rem;
-    }
-    h2 {
-        font-size: 1.5rem;
-    }
-    .display-4 {
-        font-size: 2.2rem;
-    }
+/* Alert styling */
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Make tables more mobile-friendly */
-@media (max-width: 576px) {
-    .table-responsive {
-        font-size: 0.85rem;
-    }
+.alert-success {
+    background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
+    color: #1B5E20;
 }
 
-/* Better spacing for form groups on mobile */
-@media (max-width: 576px) {
-    .form-group {
-        margin-bottom: 1.2rem;
-    }
+.alert-danger {
+    background: linear-gradient(135deg, #FFCDD2 0%, #EF9A9A 100%);
+    color: #B71C1C;
 }
 
-/* Custom style for badge lists */
-.badge-list .badge {
-    margin-right: 0.3rem;
-    margin-bottom: 0.3rem;
+.alert-info {
+    background: var(--hockey-gradient-3);
+    color: var(--hockey-dark-blue);
 }
 
-/* Navbar active link style */
-.navbar-dark .navbar-nav .nav-link.active {
-    font-weight: bold;
-    color: #fff;
+.alert-warning {
+    background: linear-gradient(135deg, #FFE082 0%, #FFD54F 100%);
+    color: #F57F17;
 }
 
-/* Style the footer */
-footer {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+/* Buttons with hockey theme */
+.btn-primary {
+    background: var(--hockey-gradient-1);
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
 }
 
-/* Custom button styles */
+.btn-primary:hover {
+    background: var(--hockey-gradient-2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #43A047 0%, #2E7D32 100%);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+    transform: translateY(-2px);
+}
+
 .btn-hockey {
-    background-color: #1a5d1a;
-    border-color: #1a5d1a;
+    background: var(--hockey-gradient-1);
+    border: none;
     color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
 }
 
 .btn-hockey:hover {
-    background-color: #134313;
-    border-color: #134313;
+    background: var(--hockey-gradient-2);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.8);
+    color: white;
+}
+
+.btn-outline-light:hover {
+    background: white;
+    color: var(--hockey-blue);
+}
+
+/* Form controls */
+.form-control {
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--hockey-blue);
+    box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.15);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #424242;
+}
+
+/* Tables */
+.table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: var(--hockey-gradient-3);
+    color: var(--hockey-dark-blue);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(227, 242, 253, 0.3);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(30, 136, 229, 0.1);
+}
+
+/* Badges */
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+.badge.bg-primary {
+    background: var(--hockey-blue) !important;
+}
+
+.badge.bg-success {
+    background: var(--hockey-green) !important;
+}
+
+.badge.bg-danger {
+    background: var(--hockey-red) !important;
+}
+
+/* Footer with gradient */
+footer {
+    background: var(--hockey-gradient-2);
+    color: white;
+    margin-top: 3rem;
+    padding: 2rem 0;
+    border-top: none;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+footer h5 {
+    color: white;
+    font-weight: 600;
+}
+
+footer a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+footer a:hover {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Stat cards */
+.stat-card {
+    background: var(--hockey-gradient-3);
+    border-left: 4px solid var(--hockey-blue);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h3 {
+    color: var(--hockey-dark-blue);
+    font-weight: bold;
+}
+
+.stat-card .display-4 {
+    color: var(--hockey-blue);
+    font-weight: 700;
 }
 
 /* Player card styles */
@@ -102,7 +321,8 @@ footer {
 
 /* Custom shadow for important cards */
 .card-important {
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(30, 136, 229, 0.2);
+    border: 2px solid var(--hockey-blue);
 }
 
 /* Notification badge */
@@ -115,4 +335,127 @@ footer {
     top: -5px;
     right: -5px;
     font-size: 0.65rem;
+}
+
+/* Custom badge list */
+.badge-list .badge {
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Avatar placeholder */
+.avatar-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background: var(--hockey-gradient-1);
+    color: white;
+}
+
+/* Hero section on homepage */
+.hero-section {
+    background: var(--hockey-gradient-1);
+    color: white;
+    padding: 3rem 0;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* List group items */
+.list-group-item {
+    border: 1px solid rgba(30, 136, 229, 0.2);
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background: var(--hockey-gradient-3);
+    border-color: var(--hockey-blue);
+}
+
+/* Search bar in navbar */
+.navbar .form-control {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+}
+
+.navbar .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar .form-control:focus {
+    background: white;
+    color: #212529;
+    border-color: white;
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+    .display-4 {
+        font-size: 2.2rem;
+    }
+    
+    main.container {
+        padding: 1.5rem;
+    }
+}
+
+/* Make tables more mobile-friendly */
+@media (max-width: 576px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    main.container {
+        padding: 1rem;
+    }
+}
+
+/* Better spacing for form groups on mobile */
+@media (max-width: 576px) {
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hockey puck icon animation */
+@keyframes puck-slide {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+.navbar-brand i {
+    animation: puck-slide 2s ease-in-out infinite;
+}
+
+/* Page header styling */
+.page-header {
+    background: var(--hockey-gradient-3);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-left: 5px solid var(--hockey-blue);
+}
+
+.page-header h1 {
+    color: var(--hockey-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: #616161;
+    margin-bottom: 0;
 }
