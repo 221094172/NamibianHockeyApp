@@ -9,7 +9,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(135deg, rgba(227, 242, 253, 0.95) 0%, rgba(179, 229, 252, 0.95) 100%);
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
@@ -147,7 +147,7 @@
     left: 0;
     width: 100%;
     text-align: center;
-    color: #fff;
+    color: #0D47A1;
     font-family: 'Arial', sans-serif;
     font-size: 18px;
     font-weight: bold;
