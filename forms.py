@@ -121,3 +121,21 @@ class LinkPlayerForm(FlaskForm):
     player_id = HiddenField('Player ID', validators=[DataRequired()])
     user_id = HiddenField('User ID', validators=[DataRequired()])
     submit = SubmitField('Link Account')
+
+class PlayerAccountForm(FlaskForm):
+    player_id = HiddenField('Player ID', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=64)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Create Account')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('Username already taken. Please choose a different one.')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('Email already in use. Please use a different one.')
