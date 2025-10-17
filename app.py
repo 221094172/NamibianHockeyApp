@@ -17,12 +17,11 @@ db = SQLAlchemy(model_class=Base)
 
 # Create Flask app
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
+app.secret_key = os.environ.get("SESSION_SECRET")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Configure database - use SQLite for local development
-database_url = "sqlite:///instance/hockey.db"
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+# Configure database - use PostgreSQL from DATABASE_URL
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -41,17 +40,9 @@ with app.app_context():
     # Import models to ensure tables are created
     import models  # noqa: F401
     
-    # Create instance directory if it doesn't exist
-    import os
-    instance_path = os.path.join(os.path.dirname(__file__), 'instance')
-    os.makedirs(instance_path, exist_ok=True)
-    
     # Create all tables
-    try:
-        db.create_all()
-        print("Database tables created successfully")
-    except Exception as e:
-        print(f"Database creation error: {e}")
+    db.create_all()
+    print("Database tables created successfully")
     
     # Import routes
     import routes  # noqa: F401
