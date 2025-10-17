@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, IntegerField, TextAreaField, DateTimeField, SearchField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DateField, IntegerField, TextAreaField, DateTimeField, SearchField, HiddenField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError, Optional
 from models import User, Team, Player
 
@@ -10,12 +10,12 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
-    
+
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username already taken. Please choose a different one.')
-    
+
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
@@ -41,7 +41,7 @@ class TeamRegistrationForm(FlaskForm):
         FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')
     ])
     submit = SubmitField('Register Team')
-    
+
     def validate_name(self, name):
         team = Team.query.filter_by(name=name.data).first()
         if team:
@@ -88,7 +88,7 @@ class NotificationForm(FlaskForm):
     is_global = BooleanField('Send to all teams')
     target_team_id = SelectField('Target Team', coerce=int, validators=[Optional()])
     submit = SubmitField('Send Notification')
-    
+
 class SearchForm(FlaskForm):
     query = StringField('Search', validators=[DataRequired(), Length(min=2, max=100)])
     category = SelectField('Category', choices=[
@@ -98,7 +98,7 @@ class SearchForm(FlaskForm):
         ('events', 'Events')
     ], default='all')
     submit = SubmitField('Search')
-    
+
 class AdminRegistrationForm(FlaskForm):
     username = StringField('Admin Username', validators=[DataRequired(), Length(min=4, max=64)])
     email = StringField('Admin Email', validators=[DataRequired(), Email()])
@@ -106,13 +106,18 @@ class AdminRegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     admin_code = PasswordField('Admin Code', validators=[DataRequired()])
     submit = SubmitField('Register as Admin')
-    
+
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username already taken. Please choose a different one.')
-    
+
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Email already in use. Please use a different one.')
+
+class LinkPlayerForm(FlaskForm):
+    player_id = HiddenField('Player ID', validators=[DataRequired()])
+    user_id = HiddenField('User ID', validators=[DataRequired()])
+    submit = SubmitField('Link Account')

@@ -130,6 +130,10 @@ def dashboard():
     # Get current datetime
     now = datetime.utcnow()
     
+    # Check if user is a player - redirect to player portal
+    if current_user.is_player and current_user.player_profile:
+        return redirect(url_for('player_portal'))
+    
     # Get teams managed by current user
     user_teams = Team.query.filter_by(manager_id=current_user.id).all()
     
@@ -576,6 +580,127 @@ def notifications():
         db.session.commit()
         flash('Notification has been sent!', 'success')
         return redirect(url_for('notifications'))
+
+
+@app.route('/player/portal')
+@login_required
+def player_portal():
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    # Only players can access this
+    if not current_user.is_player or not current_user.player_profile:
+        flash('You do not have a player profile.', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    player = current_user.player_profile
+    
+    # Import PlayerStats and TeamStandings
+    from models import PlayerStats, TeamStandings
+    
+    # Calculate total stats
+    total_goals = db.session.query(db.func.sum(PlayerStats.goals)).filter_by(player_id=player.id).scalar() or 0
+    total_assists = db.session.query(db.func.sum(PlayerStats.assists)).filter_by(player_id=player.id).scalar() or 0
+    total_penalties = db.session.query(db.func.sum(PlayerStats.penalties)).filter_by(player_id=player.id).scalar() or 0
+    total_minutes = db.session.query(db.func.sum(PlayerStats.minutes_played)).filter_by(player_id=player.id).scalar() or 0
+    
+    # Get upcoming events for player's teams
+    team_ids = [team.id for team in player.teams]
+    upcoming_events = Event.query.join(Event.teams).filter(
+        Team.id.in_(team_ids),
+        Event.start_date > now
+    ).order_by(Event.start_date).limit(5).all()
+    
+    # Get team standings (latest event)
+    latest_event = Event.query.order_by(Event.start_date.desc()).first()
+    standings = []
+    if latest_event:
+        standings = TeamStandings.query.filter_by(event_id=latest_event.id).order_by(TeamStandings.points.desc()).all()
+    
+    # Get notifications for player's teams
+    notifications = Notification.query.filter(
+        (Notification.is_global == True) | 
+        (Notification.target_team_id.in_(team_ids))
+    ).order_by(Notification.created_at.desc()).limit(5).all()
+    
+    return render_template('player_portal.html',
+                          total_goals=total_goals,
+                          total_assists=total_assists,
+                          total_penalties=total_penalties,
+                          total_minutes=total_minutes,
+                          upcoming_events=upcoming_events,
+                          standings=standings,
+                          notifications=notifications,
+                          now=now)
+
+
+@app.route('/admin/create-player-account/<int:player_id>', methods=['GET', 'POST'])
+@login_required
+def create_player_account(player_id):
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    # Only admin or team manager can create player accounts
+    player = Player.query.get_or_404(player_id)
+    
+    is_manager = any(team.manager_id == current_user.id for team in player.teams)
+    
+    if not current_user.is_admin and not is_manager:
+        flash('You do not have permission to create an account for this player.', 'danger')
+        return redirect(url_for('player_list'))
+    
+    # Check if player already has an account
+    if player.user_id:
+        flash('This player already has an account.', 'warning')
+        return redirect(url_for('player_list'))
+    
+    from forms import PlayerAccountForm
+    
+    form = PlayerAccountForm()
+    form.player_id.data = player.id
+    
+    if form.validate_on_submit():
+        # Create user account
+        user = User()
+        user.username = form.username.data
+        user.email = form.email.data
+        user.set_password(form.password.data)
+        user.is_player = True
+        db.session.add(user)
+        db.session.flush()  # Get user.id
+        
+        # Link player to user
+        player.user_id = user.id
+        db.session.commit()
+        
+        flash(f'Player account created successfully for {player.full_name}!', 'success')
+        return redirect(url_for('player_list'))
+    
+    # Pre-populate email if available
+    if request.method == 'GET' and player.email:
+        form.email.data = player.email
+    
+    return render_template('create_player_account.html', form=form, player=player, now=now)
+
+
+@app.route('/player/stats')
+@login_required
+def player_stats():
+    # Get current datetime
+    now = datetime.utcnow()
+    
+    # Only players can access this
+    if not current_user.is_player or not current_user.player_profile:
+        flash('You do not have a player profile.', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    from models import PlayerStats
+    
+    player = current_user.player_profile
+    stats = PlayerStats.query.filter_by(player_id=player.id).order_by(PlayerStats.created_at.desc()).all()
+    
+    return render_template('player_stats.html', stats=stats, now=now)
+
     
     # Get notifications visible to current user
     if current_user.is_admin:

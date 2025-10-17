@@ -1,0 +1,209 @@
+
+{% extends "base.html" %}
+
+{% block title %}Player Portal - {{ current_user.player_profile.full_name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0">
+            <i class="fas fa-hockey-puck me-2"></i>Player Portal
+        </h1>
+        <p class="text-muted">Welcome, {{ current_user.player_profile.full_name }}</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <span class="badge bg-success">Player</span>
+    </div>
+</div>
+
+<!-- Player Stats Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body text-center">
+                <i class="fas fa-bullseye fa-2x mb-2"></i>
+                <h5 class="card-title">Total Goals</h5>
+                <p class="display-4 mb-0">{{ total_goals }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body text-center">
+                <i class="fas fa-hands-helping fa-2x mb-2"></i>
+                <h5 class="card-title">Total Assists</h5>
+                <p class="display-4 mb-0">{{ total_assists }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                <h5 class="card-title">Total Penalties</h5>
+                <p class="display-4 mb-0">{{ total_penalties }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h5 class="card-title">Minutes Played</h5>
+                <p class="display-4 mb-0">{{ total_minutes }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Teams -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>My Teams</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if current_user.player_profile.teams %}
+                <div class="list-group list-group-flush">
+                    {% for team in current_user.player_profile.teams %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ team.name }}</h6>
+                                <small>Division: {{ team.division }}</small>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary">{{ current_user.player_profile.position }}</span>
+                                {% if current_user.player_profile.jersey_number %}
+                                <span class="badge bg-secondary">#{{ current_user.player_profile.jersey_number }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted mb-0">You are not assigned to any team yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Events -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Upcoming Events</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if upcoming_events %}
+                <div class="list-group list-group-flush">
+                    {% for event in upcoming_events %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ event.name }}</h6>
+                            <small>{{ event.start_date.strftime('%d %b %Y') }}</small>
+                        </div>
+                        <small><i class="fas fa-map-marker-alt me-1"></i>{{ event.location }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted mb-0">No upcoming events.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Standings -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Team Standings</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if standings %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Team</th>
+                                <th>Played</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for standing in standings %}
+                            <tr {% if standing.team in current_user.player_profile.teams %}class="table-primary"{% endif %}>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ standing.team.name }}</td>
+                                <td>{{ standing.wins + standing.draws + standing.losses }}</td>
+                                <td>{{ standing.wins }}</td>
+                                <td>{{ standing.draws }}</td>
+                                <td>{{ standing.losses }}</td>
+                                <td>{{ standing.goals_for }}</td>
+                                <td>{{ standing.goals_against }}</td>
+                                <td>{{ standing.goal_difference }}</td>
+                                <td><strong>{{ standing.points }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted mb-0">No standings available yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Notifications -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Notifications</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if notifications %}
+                <div class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ notification.title }}</h6>
+                            <small>{{ notification.created_at.strftime('%d %b %Y') }}</small>
+                        </div>
+                        <p class="mb-1">{{ notification.content }}</p>
+                        {% if notification.is_global %}
+                        <small class="text-muted"><i class="fas fa-globe me-1"></i>Global announcement</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted mb-0">No notifications available.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -25,6 +25,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    is_player = db.Column(db.Boolean, default=False)
     # Removed created_at column temporarily to match existing database
     teams = db.relationship('Team', backref='manager', lazy=True)
     
@@ -64,9 +65,11 @@ class Player(db.Model):
     phone = db.Column(db.String(20))
     photo_url = db.Column(db.String(256))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Link to user account
     # Add explicit relationship to Team model via player_team association table
     teams = db.relationship('Team', secondary=player_team, lazy='subquery',
                          back_populates='players')
+    user = db.relationship('User', backref='player_profile', uselist=False)
     
     def __repr__(self):
         return f'<Player {self.first_name} {self.last_name}>'
@@ -103,3 +106,39 @@ class Notification(db.Model):
     
     def __repr__(self):
         return f'<Notification {self.title}>'
+
+class PlayerStats(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    goals = db.Column(db.Integer, default=0)
+    assists = db.Column(db.Integer, default=0)
+    penalties = db.Column(db.Integer, default=0)
+    minutes_played = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    player = db.relationship('Player', backref='stats')
+    event = db.relationship('Event', backref='player_stats')
+    
+    def __repr__(self):
+        return f'<PlayerStats {self.player_id} - Event {self.event_id}>'
+
+class TeamStandings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    wins = db.Column(db.Integer, default=0)
+    losses = db.Column(db.Integer, default=0)
+    draws = db.Column(db.Integer, default=0)
+    goals_for = db.Column(db.Integer, default=0)
+    goals_against = db.Column(db.Integer, default=0)
+    points = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    team = db.relationship('Team', backref='standings')
+    event = db.relationship('Event', backref='team_standings')
+    
+    @property
+    def goal_difference(self):
+        return self.goals_for - self.goals_against
+    
+    def __repr__(self):
+        return f'<TeamStandings {self.team_id} - Event {self.event_id}>'

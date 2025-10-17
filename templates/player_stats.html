@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Stats - {{ current_user.player_profile.full_name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="mb-0"><i class="fas fa-chart-line me-2"></i>My Performance Stats</h1>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('player_portal') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Portal
+        </a>
+    </div>
+</div>
+
+{% if stats %}
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Game-by-Game Performance</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Penalties</th>
+                        <th>Minutes Played</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in stats %}
+                    <tr>
+                        <td>{{ stat.event.name }}</td>
+                        <td>{{ stat.event.start_date.strftime('%d %b %Y') }}</td>
+                        <td><span class="badge bg-primary">{{ stat.goals }}</span></td>
+                        <td><span class="badge bg-success">{{ stat.assists }}</span></td>
+                        <td><span class="badge bg-warning">{{ stat.penalties }}</span></td>
+                        <td>{{ stat.minutes_played }} min</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle me-2"></i>No performance stats recorded yet. Stats will appear after you participate in events.
+</div>
+{% endif %}
+{% endblock %}
