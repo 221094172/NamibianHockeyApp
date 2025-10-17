@@ -69,7 +69,7 @@ class Player(db.Model):
     # Add explicit relationship to Team model via player_team association table
     teams = db.relationship('Team', secondary=player_team, lazy='subquery',
                          back_populates='players')
-    user = db.relationship('User', backref='player_profile', uselist=False)
+    user = db.relationship('User', backref=db.backref('player_profile', uselist=False), uselist=False)
     
     def __repr__(self):
         return f'<Player {self.first_name} {self.last_name}>'
