@@ -420,7 +420,6 @@ def register_event():
     form = EventRegistrationForm()
     
     if form.validate_on_submit():
-        from datetime import datetime
         event = Event()
         event.name = form.name.data
         event.description = form.description.data
