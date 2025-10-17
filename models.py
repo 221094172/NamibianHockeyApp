@@ -26,7 +26,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_player = db.Column(db.Boolean, default=False)
-    # Removed created_at column temporarily to match existing database
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     teams = db.relationship('Team', backref='manager', lazy=True)
     
     def set_password(self, password):
