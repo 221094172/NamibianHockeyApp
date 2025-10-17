@@ -72,9 +72,9 @@ class EventRegistrationForm(FlaskForm):
     name = StringField('Event Name', validators=[DataRequired(), Length(max=120)])
     description = TextAreaField('Description', validators=[Optional()])
     location = StringField('Location', validators=[DataRequired(), Length(max=120)])
-    start_date = DateTimeField('Start Date and Time', format='%Y-%m-%d %H:%M', validators=[DataRequired()])
-    end_date = DateTimeField('End Date and Time', format='%Y-%m-%d %H:%M', validators=[DataRequired()])
-    registration_deadline = DateTimeField('Registration Deadline', format='%Y-%m-%d %H:%M', validators=[Optional()])
+    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
+    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    registration_deadline = DateField('Registration Deadline', format='%Y-%m-%d', validators=[Optional()])
     submit = SubmitField('Create Event')
 
 class TeamEventRegistrationForm(FlaskForm):

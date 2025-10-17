@@ -59,27 +59,27 @@
                         <div class="col-md-6">
                             {{ form.start_date.label(class="form-label") }}
                             {% if form.start_date.errors %}
-                                {{ form.start_date(class="form-control is-invalid", type="datetime-local") }}
+                                {{ form.start_date(class="form-control is-invalid", type="date") }}
                                 <div class="invalid-feedback">
                                     {% for error in form.start_date.errors %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.start_date(class="form-control", type="datetime-local") }}
+                                {{ form.start_date(class="form-control", type="date") }}
                             {% endif %}
                         </div>
                         <div class="col-md-6">
                             {{ form.end_date.label(class="form-label") }}
                             {% if form.end_date.errors %}
-                                {{ form.end_date(class="form-control is-invalid", type="datetime-local") }}
+                                {{ form.end_date(class="form-control is-invalid", type="date") }}
                                 <div class="invalid-feedback">
                                     {% for error in form.end_date.errors %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.end_date(class="form-control", type="datetime-local") }}
+                                {{ form.end_date(class="form-control", type="date") }}
                             {% endif %}
                         </div>
                     </div>
@@ -87,14 +87,14 @@
                     <div class="mb-4">
                         {{ form.registration_deadline.label(class="form-label") }}
                         {% if form.registration_deadline.errors %}
-                            {{ form.registration_deadline(class="form-control is-invalid", type="datetime-local") }}
+                            {{ form.registration_deadline(class="form-control is-invalid", type="date") }}
                             <div class="invalid-feedback">
                                 {% for error in form.registration_deadline.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.registration_deadline(class="form-control", type="datetime-local") }}
+                            {{ form.registration_deadline(class="form-control", type="date") }}
                         {% endif %}
                         <small class="form-text text-muted">The deadline for teams to register for this event.</small>
                     </div>

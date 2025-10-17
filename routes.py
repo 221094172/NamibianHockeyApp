@@ -420,13 +420,18 @@ def register_event():
     form = EventRegistrationForm()
     
     if form.validate_on_submit():
+        from datetime import datetime
         event = Event()
         event.name = form.name.data
         event.description = form.description.data
         event.location = form.location.data
-        event.start_date = form.start_date.data
-        event.end_date = form.end_date.data
-        event.registration_deadline = form.registration_deadline.data
+        # Convert date to datetime (start of day)
+        event.start_date = datetime.combine(form.start_date.data, datetime.min.time())
+        # Convert date to datetime (end of day)
+        event.end_date = datetime.combine(form.end_date.data, datetime.max.time())
+        # Convert registration deadline if provided
+        if form.registration_deadline.data:
+            event.registration_deadline = datetime.combine(form.registration_deadline.data, datetime.max.time())
         event.created_by = current_user.id
         db.session.add(event)
         db.session.commit()
